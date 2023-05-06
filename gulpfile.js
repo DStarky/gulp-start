@@ -17,7 +17,7 @@ const svgSprite = require("gulp-svg-sprite");
 
 
 function pages(){
-  return src('app/pages/*.html')
+  return src('src/pages/*.html')
   .pipe(include({
     includePaths: 'src/components'
   }))
@@ -37,18 +37,18 @@ function fonts(){
 
 function images(){
   return src(['src/images/src/*.*', '!src/images/src/*.svg'])
-  .pipe(newer('src/images/dist'))
+  .pipe(newer('src/images'))
   .pipe(avif( { quality : 50 }))
 
   .pipe(src('src/images/src/*.*'))
-  .pipe(newer('src/images/dist'))
+  .pipe(newer('src/images'))
   .pipe(webp())
 
   .pipe(src('src/images/src/*.*'))
-  .pipe(newer('src/images/dist'))
+  .pipe(newer('src/images'))
   .pipe(imagemin())
 
-  .pipe(dest('src/images/dist'))
+  .pipe(dest('src/images'))
 }
 
 function scripts() {
@@ -77,7 +77,7 @@ function watching() {
   watch(["src/scss/style.scss"], styles);
   watch(["src/images/src"], images);
   watch(["src/scripts/main.js"], scripts);
-  watch(["src/components/*", 'app/pages/*'], pages);
+  watch(["src/components/*", 'src/pages/*'], pages);
   watch(["src/*.html"]).on("change", browserSync.reload);
 }
 
@@ -88,7 +88,7 @@ function cleanDist(){
 
 function building() {
   return src(
-    ["src/css/style.min.css", "src/scripts/main.min.js", "src/**/*.html", 'src/images/dist/*.*', 'src/fonts/*.*'],
+    ["src/css/style.min.css", "src/scripts/main.min.js", "src/*.html", 'src/images/dist/*.*', 'src/fonts/*.*'],
     { base: "src" }
   ).pipe(dest("./dist"));
 }
