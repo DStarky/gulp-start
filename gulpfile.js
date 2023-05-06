@@ -88,7 +88,7 @@ function cleanDist(){
 
 function building() {
   return src(
-    ["src/css/style.min.css", "src/scripts/main.min.js", "src/*.html", 'src/images/dist/*.*', 'src/fonts/*.*'],
+    ["src/css/style.min.css", "src/scripts/main.min.js", "src/*.html", 'src/images/*.*', 'src/fonts/*.*'],
     { base: "src" }
   ).pipe(dest("./dist"));
 }
