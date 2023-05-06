@@ -6,6 +6,32 @@ const uglify = require("gulp-uglify-es").default;
 const browserSync = require("browser-sync").create();
 const autoprefixer = require("gulp-autoprefixer");
 const clean = require("gulp-clean");
+const avif = require("gulp-avif");
+const webp = require("gulp-webp");
+const imagemin = require("gulp-imagemin");
+const newer = require("gulp-newer");
+const svgSprite = require("gulp-svg-sprite");
+
+function images(){
+  return src(['src/images/src/*.*', '!src/images/src/*.svg'])
+  .pipe(newer('src/images/dist'))
+  .pipe(avif( { quality : 50 }))
+
+  .pipe(src('src/images/src/*.*'))
+  .pipe(newer('src/images/dist'))
+  .pipe(webp())
+
+  .pipe(src('src/images/src/*.*'))
+  .pipe(newer('src/images/dist'))
+  .pipe(imagemin())
+
+  .pipe(dest('src/images/dist'))
+}
+
+function sprite(){
+  return src()
+}
+
 
 function scripts() {
   return src("src/scripts/main.js")
@@ -25,18 +51,17 @@ function styles() {
 }
 
 function watching() {
-  watch(["src/scss/style.scss"], styles);
-  watch(["src/scripts/main.js"], scripts);
-  watch(["src/*.html"]).on("change", browserSync.reload);
-}
-
-function browsersync() {
   browserSync.init({
     server: {
       baseDir: "src/",
     },
   });
+  watch(["src/scss/style.scss"], styles);
+  watch(["src/images/src"], images);
+  watch(["src/scripts/main.js"], scripts);
+  watch(["src/*.html"]).on("change", browserSync.reload);
 }
+
 
 function cleanDist(){
   return src('dist').pipe(clean())
@@ -44,7 +69,7 @@ function cleanDist(){
 
 function building() {
   return src(
-    ["src/css/style.min.css", "src/scripts/main.min.js", "src/**/*.html"],
+    ["src/css/style.min.css", "src/scripts/main.min.js", "src/**/*.html", 'src/images/dist/*.*'],
     { base: "src" }
   ).pipe(dest("./dist"));
 }
@@ -52,9 +77,12 @@ function building() {
 exports.styles = styles;
 exports.scripts = scripts;
 exports.watching = watching;
-exports.browsersync = browsersync;
+exports.images = images;
+exports.clean = cleanDist;
+exports.sprite = sprite;
+
 
 // GENERAL TASKS
 
 exports.build = series(cleanDist, building);
-exports.default = parallel(styles, scripts, browsersync, watching);
+exports.default = parallel(styles, images, scripts, watching);
