@@ -8,9 +8,21 @@ const autoprefixer = require("gulp-autoprefixer");
 const clean = require("gulp-clean");
 const avif = require("gulp-avif");
 const webp = require("gulp-webp");
+const fonter = require("gulp-fonter");
+const ttf2woff2 = require("gulp-ttf2woff2");
 const imagemin = require("gulp-imagemin");
 const newer = require("gulp-newer");
 const svgSprite = require("gulp-svg-sprite");
+
+function fonts(){
+  return src('src/fonts/src/*.*')
+    .pipe(fonter({
+      formats: ['woff', 'ttf']
+    }))
+    .pipe(src('src/fonts/*.ttf'))
+    .pipe(ttf2woff2())
+    .pipe(dest('src/fonts/'))
+}
 
 function images(){
   return src(['src/images/src/*.*', '!src/images/src/*.svg'])
@@ -27,11 +39,6 @@ function images(){
 
   .pipe(dest('src/images/dist'))
 }
-
-function sprite(){
-  return src()
-}
-
 
 function scripts() {
   return src("src/scripts/main.js")
@@ -69,7 +76,7 @@ function cleanDist(){
 
 function building() {
   return src(
-    ["src/css/style.min.css", "src/scripts/main.min.js", "src/**/*.html", 'src/images/dist/*.*'],
+    ["src/css/style.min.css", "src/scripts/main.min.js", "src/**/*.html", 'src/images/dist/*.*', 'src/fonts/*.*'],
     { base: "src" }
   ).pipe(dest("./dist"));
 }
@@ -78,8 +85,9 @@ exports.styles = styles;
 exports.scripts = scripts;
 exports.watching = watching;
 exports.images = images;
+exports.fonts = fonts;
 exports.clean = cleanDist;
-exports.sprite = sprite;
+
 
 
 // GENERAL TASKS
