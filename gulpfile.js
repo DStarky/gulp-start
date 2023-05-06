@@ -12,7 +12,18 @@ const fonter = require("gulp-fonter");
 const ttf2woff2 = require("gulp-ttf2woff2");
 const imagemin = require("gulp-imagemin");
 const newer = require("gulp-newer");
+const include = require("gulp-include");
 const svgSprite = require("gulp-svg-sprite");
+
+
+function pages(){
+  return src('app/pages/*.html')
+  .pipe(include({
+    includePaths: 'src/components'
+  }))
+  .pipe(dest('src'))
+  .pipe(browserSync.stream())
+}
 
 function fonts(){
   return src('src/fonts/src/*.*')
@@ -66,6 +77,7 @@ function watching() {
   watch(["src/scss/style.scss"], styles);
   watch(["src/images/src"], images);
   watch(["src/scripts/main.js"], scripts);
+  watch(["src/components/*", 'app/pages/*'], pages);
   watch(["src/*.html"]).on("change", browserSync.reload);
 }
 
@@ -86,6 +98,7 @@ exports.scripts = scripts;
 exports.watching = watching;
 exports.images = images;
 exports.fonts = fonts;
+exports.pages = pages;
 exports.clean = cleanDist;
 
 
@@ -93,4 +106,4 @@ exports.clean = cleanDist;
 // GENERAL TASKS
 
 exports.build = series(cleanDist, building);
-exports.default = parallel(styles, images, scripts, watching);
+exports.default = parallel(styles, images, scripts, pages, watching);
